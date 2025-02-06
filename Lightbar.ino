@@ -1,4 +1,5 @@
 #include <WiFi.h>
+#include <SPI.h>
 
 #include "constants.h"
 #include "config.h"
@@ -42,6 +43,9 @@ void setup()
   Serial.println("# LIGHTBAR2MQTT            (Version " + constants::VERSION + ") #");
   Serial.println("# https://github.com/ebinf/lightbar2mqtt #");
   Serial.println("##########################################");
+
+  SPI.end();
+  SPI.begin(RADIO_PIN_SCK, RADIO_PIN_MISO, RADIO_PIN_MOSI);
 
   radio.setup();
 
