@@ -82,7 +82,12 @@ void MQTT::onMessage(char *topic, byte *payload, unsigned int length)
 
         if (command.hasOwnProperty("state"))
         {
-            lightbar->onOff();
+            const char *state = command["state"];
+            Serial.print("[MQTT] Setting on/off state to: ");
+            Serial.print(strcmp(state, "ON") == 0);
+            Serial.print(", was before: ");
+            Serial.println(lightbar->getOnState());
+            lightbar->setOnOff(strcmp(state, "ON") == 0);
             this->publishLightbarState(lightbar);
         }
 
@@ -94,14 +99,6 @@ void MQTT::onMessage(char *topic, byte *payload, unsigned int length)
         if (command.hasOwnProperty("color_temp"))
         {
             lightbar->setMiredTemperature((uint)command["color_temp"]);
-        }
-    }
-}
-
-Lightbar *MQTT::get_lightbar_by_serial(uint32_t serial){
-    for (int i = 0; i < this->lightbarCount; i++){
-        if (this->lightbars[i]->getSerial() == serial){
-            return this->lightbars[i];
         }
     }
 }
@@ -151,7 +148,7 @@ void MQTT::setup()
 
     this->sendAllHomeAssistantDiscoveryMessages();
 
-    //send your current state after init, should be on by default
+    // Send your current state after init, should be on by default
     for (int i = 0; i < this->lightbarCount; i++){
         this->publishLightbarState(this->lightbars[i]);
     }
@@ -429,13 +426,9 @@ void MQTT::sendAction(Remote *remote, byte command, byte options)
     String action;
     switch ((uint8_t)command)
     {
-    case Lightbar::Command::ON_OFF:{
+    case Lightbar::Command::ON_OFF:
         action = "press";
-        Lightbar *lightbar = this->get_lightbar_by_serial(remote->getSerial());
-        lightbar->toggleInternalState();
-        this->publishLightbarState(lightbar);
         break;
-    }
 
     case Lightbar::Command::BRIGHTER:
         action = "turn_clockwise";

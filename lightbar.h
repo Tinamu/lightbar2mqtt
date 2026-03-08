@@ -31,6 +31,7 @@ public:
     void cooler();
     void reset();
     void pair();
+    void setOnOff(bool on);
     void setTemperature(uint8_t value);
     void setMiredTemperature(uint mireds);
     void setBrightness(uint8_t value);
