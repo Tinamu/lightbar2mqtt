@@ -3,6 +3,7 @@
 
 #include "constants.h"
 #include "config.h"
+#include "config_defaults.h"
 #include "radio.h"
 #include "lightbar.h"
 #include "mqtt.h"
