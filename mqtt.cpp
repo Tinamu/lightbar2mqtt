@@ -83,10 +83,6 @@ void MQTT::onMessage(char *topic, byte *payload, unsigned int length)
         if (command.hasOwnProperty("state"))
         {
             const char *state = command["state"];
-            Serial.print("[MQTT] Setting on/off state to: ");
-            Serial.print(strcmp(state, "ON") == 0);
-            Serial.print(", was before: ");
-            Serial.println(lightbar->getOnState());
             lightbar->setOnOff(strcmp(state, "ON") == 0);
             this->publishLightbarState(lightbar);
         }
@@ -286,7 +282,6 @@ void MQTT::sendHomeAssistantLightbarDiscoveryMessages(Lightbar *lightbar)
     "brightness_scale": 15,
     "name": "Light bar",
     "cmd_t": "~/command",
-    "stat_t": "~/state",
     "uniq_id": ")json" + topicClient +
                            R"json(_lightbar",
     "max_mireds": 370,
