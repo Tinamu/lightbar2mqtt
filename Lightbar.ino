@@ -38,8 +38,13 @@ void setupWifi()
   Serial.println(WiFi.localIP());
 
   // init and get the time
-  configTime(GMT_OFFSET_SEC, DST_OFFSET_SEC, NTP_SERVER);
-  printLocalTime();
+  #if defined(GMT_OFFSET_SEC) && defined(DST_OFFSET_SEC) && defined(NTP_SERVER)
+    Serial.println("[Time] Syncing time with NTP server...");
+    configTime(GMT_OFFSET_SEC, DST_OFFSET_SEC, NTP_SERVER);
+    printLocalTime();
+  #else
+    Serial.println("[Time] NTP server not configured, skipping time sync.");
+  #endif
 }
 
 void setup()
