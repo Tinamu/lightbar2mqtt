@@ -3,9 +3,11 @@
 
 #include "constants.h"
 #include "config.h"
+#include "config_defaults.h"
 #include "radio.h"
 #include "lightbar.h"
 #include "mqtt.h"
+#include "time.h"
 
 WiFiClient wifiClient;
 Radio radio(RADIO_PIN_CE, RADIO_PIN_CSN);
@@ -34,6 +36,15 @@ void setupWifi()
 
   Serial.print("[WiFi] IP address: ");
   Serial.println(WiFi.localIP());
+
+  // init and get the time
+  #if defined(GMT_OFFSET_SEC) && defined(DST_OFFSET_SEC) && defined(NTP_SERVER)
+    Serial.println("[Time] Syncing time with NTP server...");
+    configTime(GMT_OFFSET_SEC, DST_OFFSET_SEC, NTP_SERVER);
+    printLocalTime();
+  #else
+    Serial.println("[Time] NTP server not configured, skipping time sync.");
+  #endif
 }
 
 void setup()
@@ -76,4 +87,14 @@ void loop()
 
   mqtt.loop();
   radio.loop();
+}
+
+void printLocalTime()
+{
+  struct tm timeinfo;
+  if(!getLocalTime(&timeinfo)){
+    Serial.println("Failed to obtain time");
+    return;
+  }
+  Serial.println(&timeinfo, "[Time] %A, %B %d %Y %H:%M:%S");
 }
